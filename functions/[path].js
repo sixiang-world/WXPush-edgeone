@@ -116,263 +116,6 @@ function buildSkinLink(baseUrl, skin, url) {
   return appendAccessQuery(raw, url);
 }
 
-function renderSkinHtml(theme) {
-  if (theme === 'night') {
-    return `<!doctype html>
-<html lang="zh-CN">
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width,initial-scale=1" />
-    <title id="pageTitle">消息推送</title>
-    <style>
-      :root {
-        color-scheme: dark;
-      }
-      body {
-        margin: 0;
-        min-height: 100vh;
-        font-family: "Noto Sans SC", "Segoe UI", sans-serif;
-        background: radial-gradient(circle at 20% 20%, #1f2a44 0%, #070b15 55%, #03050a 100%);
-        color: #e5ecff;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        padding: 20px;
-        box-sizing: border-box;
-      }
-      .card {
-        width: min(760px, 100%);
-        border-radius: 24px;
-        border: 1px solid rgba(164, 194, 255, 0.22);
-        background: linear-gradient(160deg, rgba(16, 24, 44, 0.85), rgba(8, 13, 26, 0.9));
-        box-shadow: 0 22px 60px rgba(4, 8, 18, 0.65);
-        overflow: hidden;
-      }
-      .header {
-        padding: 28px 28px 20px;
-        background: linear-gradient(120deg, rgba(72, 110, 255, 0.28), rgba(72, 110, 255, 0));
-        border-bottom: 1px solid rgba(164, 194, 255, 0.2);
-      }
-      .title {
-        margin: 0;
-        font-size: clamp(24px, 5vw, 34px);
-        letter-spacing: 0.04em;
-      }
-      .body {
-        padding: 24px 28px 28px;
-      }
-      .label {
-        margin: 0 0 8px;
-        color: #9eb1de;
-        font-size: 13px;
-        letter-spacing: 0.06em;
-        text-transform: uppercase;
-      }
-      .content {
-        margin: 0;
-        font-size: 17px;
-        line-height: 1.8;
-        white-space: pre-wrap;
-        word-break: break-word;
-      }
-      .foot {
-        margin-top: 24px;
-        padding-top: 16px;
-        border-top: 1px dashed rgba(164, 194, 255, 0.3);
-        color: #a6b8e6;
-        font-size: 14px;
-      }
-      @media (max-width: 640px) {
-        .header, .body {
-          padding: 18px;
-        }
-      }
-    </style>
-  </head>
-  <body>
-    <div class="card">
-      <div class="header">
-        <h1 id="title" class="title">消息推送</h1>
-      </div>
-      <div class="body">
-        <p class="label">MESSAGE</p>
-        <p id="message" class="content">无告警信息</p>
-        <div class="foot">
-          <span id="date">无时间信息</span>
-        </div>
-      </div>
-    </div>
-    <script>
-      const p = new URLSearchParams(window.location.search);
-      const title = p.get('title') || '消息推送';
-      const message = p.get('message') || '无告警信息';
-      const date = p.get('date') || '无时间信息';
-      document.getElementById('pageTitle').textContent = title;
-      document.getElementById('title').textContent = title;
-      document.getElementById('message').textContent = message;
-      document.getElementById('date').textContent = date;
-    </script>
-  </body>
-</html>`;
-  }
-
-  if (theme === 'hacker') {
-    return `<!doctype html>
-<html lang="zh-CN">
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width,initial-scale=1" />
-    <title id="pageTitle">消息推送</title>
-    <style>
-      :root {
-        color-scheme: dark;
-      }
-      body {
-        margin: 0;
-        min-height: 100vh;
-        background: #030805;
-        color: #79ffa8;
-        font-family: "Cascadia Code", "Consolas", monospace;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        padding: 20px;
-        box-sizing: border-box;
-      }
-      .terminal {
-        width: min(860px, 100%);
-        border: 1px solid #1d7f43;
-        border-radius: 14px;
-        overflow: hidden;
-        box-shadow: 0 0 30px rgba(46, 212, 112, 0.2);
-      }
-      .bar {
-        padding: 10px 14px;
-        background: #041109;
-        border-bottom: 1px solid #1d7f43;
-        font-size: 13px;
-        color: #50d684;
-      }
-      .screen {
-        padding: 18px;
-        background: linear-gradient(180deg, rgba(5, 18, 11, 0.95), rgba(1, 10, 5, 0.98));
-      }
-      .line {
-        margin: 0 0 12px;
-        line-height: 1.6;
-        white-space: pre-wrap;
-        word-break: break-word;
-      }
-      .muted {
-        color: #4db578;
-      }
-    </style>
-  </head>
-  <body>
-    <div class="terminal">
-      <div class="bar">wxpush://notification</div>
-      <div class="screen">
-        <p class="line">$ TITLE: <span id="title">消息推送</span></p>
-        <p class="line">$ MESSAGE:</p>
-        <p id="message" class="line">无告警信息</p>
-        <p class="line muted">$ DATE: <span id="date">无时间信息</span></p>
-      </div>
-    </div>
-    <script>
-      const p = new URLSearchParams(window.location.search);
-      const title = p.get('title') || '消息推送';
-      const message = p.get('message') || '无告警信息';
-      const date = p.get('date') || '无时间信息';
-      document.getElementById('pageTitle').textContent = title;
-      document.getElementById('title').textContent = title;
-      document.getElementById('message').textContent = message;
-      document.getElementById('date').textContent = date;
-    </script>
-  </body>
-</html>`;
-  }
-
-  return `<!doctype html>
-<html lang="zh-CN">
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width,initial-scale=1" />
-    <title id="pageTitle">消息推送</title>
-    <style>
-      body {
-        margin: 0;
-        min-height: 100vh;
-        font-family: "Noto Sans SC", "Segoe UI", sans-serif;
-        background: linear-gradient(160deg, #f8fbff 0%, #ebf4ff 100%);
-        color: #0f172a;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        padding: 20px;
-        box-sizing: border-box;
-      }
-      .card {
-        width: min(760px, 100%);
-        border-radius: 20px;
-        background: #fff;
-        border: 1px solid #dbe8ff;
-        box-shadow: 0 16px 40px rgba(43, 72, 136, 0.14);
-        overflow: hidden;
-      }
-      .header {
-        padding: 24px;
-        background: linear-gradient(120deg, #2f80ed, #56ccf2);
-        color: #fff;
-      }
-      .title {
-        margin: 0;
-        font-size: clamp(24px, 5vw, 34px);
-      }
-      .body {
-        padding: 24px;
-      }
-      .content {
-        margin: 0;
-        line-height: 1.8;
-        font-size: 17px;
-        white-space: pre-wrap;
-        word-break: break-word;
-      }
-      .date {
-        margin-top: 20px;
-        color: #5b6b88;
-        font-size: 14px;
-      }
-      @media (max-width: 640px) {
-        .header, .body {
-          padding: 18px;
-        }
-      }
-    </style>
-  </head>
-  <body>
-    <div class="card">
-      <div class="header">
-        <h1 id="title" class="title">消息推送</h1>
-      </div>
-      <div class="body">
-        <p id="message" class="content">无告警信息</p>
-        <div class="date" id="date">无时间信息</div>
-      </div>
-    </div>
-    <script>
-      const p = new URLSearchParams(window.location.search);
-      const title = p.get('title') || '消息推送';
-      const message = p.get('message') || '无告警信息';
-      const date = p.get('date') || '无时间信息';
-      document.getElementById('pageTitle').textContent = title;
-      document.getElementById('title').textContent = title;
-      document.getElementById('message').textContent = message;
-      document.getElementById('date').textContent = date;
-    </script>
-  </body>
-</html>`;
-}
 
 
 export async function onRequest(context) {
@@ -381,14 +124,13 @@ export async function onRequest(context) {
 
 
   // If path is a single segment like '/<token>', serve an interactive test page
-  // but ignore reserved paths like '/wxsend', '/index.html', and '/skin/*'
+  // but ignore reserved paths like '/wxsend' and '/index.html'
   const singleSeg = url.pathname.match(/^\/([^\/]+)\/?$/);
   if (
     singleSeg &&
     singleSeg[1] &&
     singleSeg[1] !== 'wxsend' &&
-    singleSeg[1] !== 'index.html' &&
-    singleSeg[1] !== 'skin'
+    singleSeg[1] !== 'index.html'
   ) {
     const rawTokenFromPath = singleSeg[1];
 
@@ -582,7 +324,6 @@ export async function onRequest(context) {
       const responseCard = document.getElementById('responseCard');
       const skinSelect = document.getElementById('skin');
       const skinPreview = document.getElementById('skinPreview');
-      const baseUrlInput = document.getElementById('base_url');
 
       const skinRouteMap = {
         classic: '/skins/classic/index.html',
@@ -980,5 +721,6 @@ async function sendMessage(accessToken, userid, template_id, base_url, title, co
 
   return await response.json();
 }
+
 
 

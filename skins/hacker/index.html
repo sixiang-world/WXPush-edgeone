@@ -1,76 +1,136 @@
 <!DOCTYPE html>
 <html lang="zh-CN" dir="ltr">
+
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>消息推送</title>
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
         body {
             font-family: "Courier New", monospace;
-            background: #000; color: #00ff00; min-height: 100vh;
-            overflow-x: hidden; position: relative;
-            display: flex; justify-content: center; align-items: center;
+            background: #000;
+            color: #00ff00;
+            min-height: 100vh;
+            overflow-x: hidden;
+            position: relative;
+            display: flex;
+            justify-content: center;
+            align-items: center;
         }
-        .matrix-bg { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #000; z-index: -1; }
-        .matrix-text { position: fixed; top: 20px; right: 20px; color: #00ff00; font-family: "Courier New", monospace; font-size: 0.8rem; opacity: 0.6; }
+
+        .matrix-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: #000;
+            z-index: -1;
+        }
+
+        .matrix-text {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            color: #00ff00;
+            font-family: "Courier New", monospace;
+            font-size: 0.8rem;
+            opacity: 0.6;
+        }
 
         .terminal {
-            width: 90%; max-width: 800px; height: 500px;
-            background: rgba(0, 0, 0, 0.9); border: 2px solid #00ff00;
-            border-radius: 8px; box-shadow: 0 0 30px rgba(0, 255, 0, 0.5);
-            position: relative; z-index: 1; overflow: hidden;
+            width: 90%;
+            max-width: 800px;
+            height: 500px;
+            background: rgba(0, 0, 0, 0.9);
+            border: 2px solid #00ff00;
+            border-radius: 8px;
+            box-shadow: 0 0 30px rgba(0, 255, 0, 0.5);
+            position: relative;
+            z-index: 1;
+            overflow: hidden;
         }
 
         .terminal-header {
-            background: rgba(0, 20, 0, 0.8); padding: 10px 15px;
-            border-bottom: 1px solid #00ff00; display: flex; align-items: center;
+            background: rgba(0, 20, 0, 0.8);
+            padding: 10px 15px;
+            border-bottom: 1px solid #00ff00;
+            display: flex;
+            align-items: center;
         }
 
         .terminal-buttons {
-            display: flex; gap: 8px;
+            display: flex;
+            gap: 8px;
         }
 
         .terminal-button {
-            width: 12px; height: 12px; border-radius: 50%;
-            background: #ff5f57; border: none;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: #ff5f57;
+            border: none;
         }
-        .terminal-button:nth-child(2) { background: #ffbd2e; }
-        .terminal-button:nth-child(3) { background: #28ca42; }
+
+        .terminal-button:nth-child(2) {
+            background: #ffbd2e;
+        }
+
+        .terminal-button:nth-child(3) {
+            background: #28ca42;
+        }
 
         .terminal-title {
-            margin-left: 15px; color: #00ff00; font-size: 14px; font-weight: bold;
+            margin-left: 15px;
+            color: #00ff00;
+            font-size: 14px;
+            font-weight: bold;
         }
 
         .terminal-body {
-            padding: 20px; height: calc(100% - 50px);
-            overflow-y: auto; font-size: 14px; line-height: 1.4;
+            padding: 20px;
+            height: calc(100% - 50px);
+            overflow-y: auto;
+            font-size: 14px;
+            line-height: 1.4;
         }
 
         .terminal-line {
-            margin-bottom: 8px; display: flex; align-items: center;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
         }
 
         .terminal-prompt {
-            color: #00ff00; margin-right: 10px;
+            color: #00ff00;
+            margin-right: 10px;
             font-weight: bold;
         }
 
         .terminal-output {
-            color: #00aa00; margin: 5px 0;
+            color: #00aa00;
+            margin: 5px 0;
         }
 
         .terminal-error {
-            color: #ff4444; margin: 5px 0;
+            color: #ff4444;
+            margin: 5px 0;
         }
 
         .terminal-success {
-            color: #44ff44; margin: 5px 0;
+            color: #44ff44;
+            margin: 5px 0;
         }
 
         /* 适配中间的通知内容 */
         .info-card {
-            background: rgba(0, 30, 30, 0.85); 
+            background: rgba(0, 30, 30, 0.85);
             border-radius: 12px;
             padding: 25px;
             margin-bottom: 25px;
@@ -81,7 +141,7 @@
 
         .info-card:hover {
             transform: translateX(5px);
-            background: rgba(0, 128, 0, 0.9); 
+            background: rgba(0, 128, 0, 0.9);
             box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
         }
 
@@ -115,12 +175,14 @@
         /* 响应式设计 */
         @media (max-width: 768px) {
             .terminal {
-                width: 100%; max-width: 100%;
+                width: 100%;
+                max-width: 100%;
                 height: auto;
             }
         }
     </style>
 </head>
+
 <body>
     <div class="particles" id="particles"></div>
 
@@ -160,60 +222,52 @@
 
         function fillContent() {
             const params = getUrlParams();
-            document.getElementById('message').textContent = params.message;
-            document.getElementById('date').textContent = params.date;
+            const titleEl = document.querySelector('.terminal-title');
+            const messageEl = document.getElementById('message');
+            const dateEl = document.getElementById('date');
+
+            if (titleEl) titleEl.textContent = params.title;
+            if (messageEl) messageEl.textContent = params.message;
+            if (dateEl) dateEl.textContent = params.date;
         }
 
-        window.onload = function() {
-            fillContent();
-        };
-    </script>`r`n<script>
-          // 创建动态粒子背景
-          function createParticles() {
-              const particlesContainer = document.getElementById('particles');
-              const particleCount = 25;
-              const colors = [
-                  'rgba(0, 188, 212, 0.2)',
-                  'rgba(0, 150, 136, 0.2)',
-                  'rgba(77, 182, 172, 0.15)'
-              ];
-             
-              for (let i = 0; i < particleCount; i++) {
-                  const particle = document.createElement('div');
-                  particle.classList.add('particle');
-                 
-                  // 随机大小
-                  const size = Math.random() * 3 + 1;
-                  particle.style.width = \`\${size}px\`;
-                  particle.style.height = \`\${size}px\`;
-                 
-                  // 随机颜色
-                  const randomColor = colors[Math.floor(Math.random() * colors.length)];
-                  particle.style.background = randomColor;
-                 
-                  // 随机位置
-                  particle.style.left = \`\${Math.random() * 100}%\`;
-                  particle.style.top = \`\${Math.random() * 100}%\`;
-                 
-                  // 随机动画延迟和持续时间
-                  particle.style.animationDelay = \`\${Math.random() * 20}s\`;
-                  particle.style.animationDuration = \`\${20 + Math.random() * 15}s\`;
-                 
-                  particlesContainer.appendChild(particle);
-              }
-          }
-  
-          // 处理 Markdown 渲染
-          function renderMarkdown() {
-              const messageEl = document.getElementById('message');
-}
-  
-          // 页面加载时调用
-          window.onload = function() {
-              createParticles();
-              renderMarkdown();
-          };
-      </script>
-</body>
-</html>
+        function createParticles() {
+            const particlesContainer = document.getElementById('particles');
+            if (!particlesContainer) return;
 
+            const particleCount = 25;
+            const colors = [
+                'rgba(0, 188, 212, 0.2)',
+                'rgba(0, 150, 136, 0.2)',
+                'rgba(77, 182, 172, 0.15)'
+            ];
+
+            for (let i = 0; i < particleCount; i++) {
+                const particle = document.createElement('div');
+                particle.classList.add('particle');
+
+                const size = Math.random() * 3 + 1;
+                particle.style.width = `${size}px`;
+                particle.style.height = `${size}px`;
+
+                const randomColor = colors[Math.floor(Math.random() * colors.length)];
+                particle.style.background = randomColor;
+
+                particle.style.left = `${Math.random() * 100}%`;
+                particle.style.top = `${Math.random() * 100}%`;
+
+                particle.style.animationDelay = `${Math.random() * 20}s`;
+                particle.style.animationDuration = `${20 + Math.random() * 15}s`;
+
+                particlesContainer.appendChild(particle);
+            }
+        }
+
+        window.addEventListener('DOMContentLoaded', () => {
+            fillContent();
+            createParticles();
+        });
+    </script>
+</body>
+
+</html>
