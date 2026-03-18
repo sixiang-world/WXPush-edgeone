@@ -637,6 +637,26 @@ export async function onRequest(context) {
         border-color: #a78bfa;
         background: #fff;
       }
+      .repo-link {
+        margin-top: 16px;
+      }
+      .repo-link a {
+        display: inline-block;
+        padding: 10px 14px;
+        border-radius: 10px;
+        border: 1px solid #dbe4ff;
+        background: #f6f8ff;
+        color: #3155d6;
+        font-size: 13px;
+        font-weight: 700;
+        text-decoration: none;
+        transition: all 0.2s ease;
+      }
+      .repo-link a:hover {
+        background: #eef2ff;
+        border-color: #c7d2fe;
+        transform: translateY(-1px);
+      }
       @media (max-width: 640px) {
         .skins {
           grid-template-columns: 1fr;
@@ -648,25 +668,18 @@ export async function onRequest(context) {
     <div class="card">
       <h1>WXPush</h1>
       <p>一个极简、可靠的微信消息推送服务，通过简单的 Webhook 请求，即可向微信用户发送模板消息。</p>
-      <div class="author">作者：<strong>饭奇骏</strong></div>
+      <div class="author">作者：<strong>诗笙</strong></div>
 
       <div class="skins">
-        <a class="skin" href="/skins/classic/index.html">经典卡片皮肤</a>
-        <a class="skin" href="/skins/night/index.html">静谧的夜空皮肤</a>
-        <a class="skin" href="/skins/hacker/index.html">MacOS Hacker 皮肤</a>
+        <a class="skin" href="/skins/classic/index.html?title=%E6%9C%8D%E5%8A%A1%E7%9B%91%E6%8E%A7%E5%91%8A%E8%AD%A6&message=%E6%95%B0%E6%8D%AE%E5%BA%93%E8%BF%9E%E6%8E%A5%E5%B7%B2%E6%81%A2%E5%A4%8D%EF%BC%8C%E5%BD%93%E5%89%8D%E5%BB%B6%E8%BF%9F%E5%9B%9E%E5%88%B0%E6%AD%A3%E5%B8%B8%E8%8C%83%E5%9B%B4%E3%80%82&date=2026-03-19%2010%3A30%3A00">经典卡片皮肤</a>
+        <a class="skin" href="/skins/night/index.html?title=%E6%B7%B1%E5%A4%9C%E5%91%8A%E8%AD%A6%E9%80%9A%E7%9F%A5&message=%E4%BB%BB%E5%8A%A1%E8%B0%83%E5%BA%A6%E7%B3%BB%E7%BB%9F%E5%8F%91%E7%8E%B0%E5%BC%82%E5%B8%B8%E5%B3%B0%E5%80%BC%EF%BC%8C%E5%B7%B2%E8%87%AA%E5%8A%A8%E8%A7%A6%E5%8F%91%E9%99%8D%E7%BA%A7%E7%AD%96%E7%95%A5%E3%80%82&date=2026-03-19%2002%3A18%3A45">静谧的夜空皮肤</a>
+        <a class="skin" href="/skins/hacker/index.html?title=SYSTEM%20ALERT&message=Node%20%5Bapi-gateway%5D%20latency%20spike%20detected.%20Auto-scaling%20policy%20applied.&date=2026-03-19%2014%3A02%3A19">MacOS Hacker 皮肤</a>
       </div>
-
-      <div class="icons">
-        <a class="btn" href="https://github.com/frankiejun" target="_blank" rel="noopener noreferrer">
-          <svg class="icon" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg"><path d="M12 .5C5.73.5.75 5.48.75 11.75c0 4.93 3.2 9.11 7.64 10.59.56.1.76-.24.76-.53 0-.26-.01-.95-.02-1.87-3.11.68-3.77-1.5-3.77-1.5-.51-1.3-1.25-1.65-1.25-1.65-1.02-.7.08-.69.08-.69 1.12.08 1.71 1.15 1.71 1.15 1.0 1.72 2.62 1.22 3.26.93.1-.72.39-1.22.71-1.5-2.48-.28-5.09-1.24-5.09-5.53 0-1.22.44-2.21 1.16-2.99-.12-.28-.5-1.41.11-2.94 0 0 .95-.31 3.12 1.15.9-.25 1.86-.38 2.82-.39.96.01 1.92.14 2.82.39 2.17-1.46 3.12-1.15 3.12-1.15.61 1.53.23 2.66.11 2.94.72.78 1.16 1.77 1.16 2.99 0 4.3-2.62 5.25-5.11 5.53.4.35.75 1.04.75 2.09 0 1.51-.01 2.72-.01 3.09 0 .29.2.63.77.52C19.05 20.86 22.25 16.68 22.25 11.75 22.25 5.48 17.27.5 12 .5z"/></svg>
-          GitHub
-        </a>
-        <a class="btn" href="https://www.youtube.com/@frankiejun8965" target="_blank" rel="noopener noreferrer">
-          <svg class="icon" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg"><path d="M23.5 6.2s-.23-1.63-.94-2.34C21.55 3 19.9 3 19.12 2.9 16.54 2.6 12 2.6 12 2.6s-4.53 0-7.12.3C4.1 3 2.45 3.1 1.44 3.86.73 4.47.5 6.1.5 6.1S.25 8 .25 9.9v2.2c0 1.93.25 3.8.25 3.8s.23 1.63.94 2.34c.99.76 2.64.76 3.42.86 2.6.3 7.12.3 7.12.3s4.53 0 7.12-.3c.79-.1 2.44-.1 3.43-.86.7-.7.94-2.34.94-2.34s.25-1.9.25-3.8V9.9c0-1.9-.25-3.7-.25-3.7zM9.75 15.3V8.7l6.18 3.3-6.18 3.3z"/></svg>
-          YouTube
-        </a>
+      <div class="preview-hint">点击皮肤卡片可查看带示例文案的预览效果。</div>
+      <div class="repo-link">
+        <a href="https://github.com/shisheng820/WXPush-edgeone" target="_blank" rel="noopener noreferrer">开源项目：shisheng820/WXPush-edgeone</a>
       </div>
-      <footer>点击上方图标前往关注，以获取更多项目更新和演示。</footer>
+      <footer>专注稳定、简洁、好用的微信通知体验。</footer>
     </div>
   </body>
 </html>`;
@@ -726,6 +739,9 @@ async function sendMessage(accessToken, userid, template_id, base_url, title, co
 
   return await response.json();
 }
+
+
+
 
 
 

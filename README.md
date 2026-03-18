@@ -194,6 +194,8 @@ MIT
 
 ## 致谢
 
+本项目最初基于以下开源项目演进而来，在此致谢：
+
 - <https://github.com/frankiejun/wxpush>
 - <https://github.com/hezhizheng/go-wxpush>
 
