@@ -442,8 +442,13 @@ export async function onRequest(context) {
       }
     }
 
-    if (!content || !title || !requestToken) {
-      const responseBody = { msg: 'Missing required parameters: content, title, token' };
+    const missingParams = [];
+    if (!content) missingParams.push('content');
+    if (!title) missingParams.push('title');
+    if (!requestToken) missingParams.push('token');
+
+    if (missingParams.length > 0) {
+      const responseBody = { msg: 'Missing required parameters: ' + missingParams.join(', ') };
       return new Response(JSON.stringify(responseBody), {
         status: 400,
         headers: { 'Content-Type': 'application/json; charset=utf-8' },
@@ -721,6 +726,7 @@ async function sendMessage(accessToken, userid, template_id, base_url, title, co
 
   return await response.json();
 }
+
 
 
 
