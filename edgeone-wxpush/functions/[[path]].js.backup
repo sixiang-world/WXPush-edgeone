@@ -1,0 +1,97 @@
+// edgeone-wxpush/functions/[[path]].js
+
+// 辅助函数：提取参数
+async function getParams(request) {
+  const { searchParams } = new URL(request.url);
+  const urlParams = Object.fromEntries(searchParams.entries());
+  let bodyParams = {};
+  if (['POST', 'PUT', 'PATCH'].includes(request.method)) {
+    const contentType = (request.headers.get('content-type') || '').toLowerCase();
+    try {
+      if (contentType.includes('application/json')) {
+        const jsonBody = await request.json();
+        bodyParams = (jsonBody && jsonBody.params) ? jsonBody.params : (jsonBody && jsonBody.data ? jsonBody.data : jsonBody);
+      } else if (contentType.includes('form-urlencoded') || contentType.includes('multipart/form-data')) {
+        const formData = await request.formData();
+        bodyParams = Object.fromEntries(formData.entries());
+      }
+    } catch (e) {}
+  }
+  return { ...urlParams, ...bodyParams };
+}
+
+// 获取微信 Access Token
+async function getStableToken(appid, secret) {
+  const tokenUrl = 'https://api.weixin.qq.com/cgi-bin/stable_token';
+  const payload = {
+    grant_type: 'client_credential',
+    appid: appid,
+    secret: secret,
+    force_refresh: false
+  };
+  const response = await fetch(tokenUrl, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json;charset=utf-8' },
+    body: JSON.stringify(payload)
+  });
+  const data = await response.json();
+  return data.access_token;
+}
+
+// 发送消息
+async function sendMessage(accessToken, userid, template_id, base_url, title, content) {
+  const sendUrl = `https://api.weixin.qq.com/cgi-bin/message/template/send?access_token=${accessToken}`;
+  const beijingTime = new Date(new Date().getTime() + 8 * 60 * 60 * 1000);
+  const date = beijingTime.toISOString().slice(0, 19).replace('T', ' ');
+  const payload = {
+    touser: userid,
+    template_id: template_id,
+    url: `${base_url}?message=${encodeURIComponent(content)}&date=${encodeURIComponent(date)}&title=${encodeURIComponent(title)}`,
+    data: {
+      title: { value: title },
+      content: { value: content }
+    }
+  };
+  const response = await fetch(sendUrl, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json;charset=utf-8' },
+    body: JSON.stringify(payload)
+  });
+  return await response.json();
+}
+
+// 导出 onRequest 处理函数 (适配 EdgeOne Pages)
+export const onRequest = async (context) => {
+  const { request, env } = context;
+  const url = new URL(request.url);
+
+  // 1. 处理 /wxsend 接口
+  if (url.pathname === '/wxsend') {
+    const params = await getParams(request);
+    const { content, title, token } = params;
+    
+    // 权限校验
+    if (token !== env.API_TOKEN) {
+      return new Response(JSON.stringify({ msg: 'Invalid token' }), { status: 403, headers: { 'Content-Type': 'application/json' } });
+    }
+
+    // 环境参数获取
+    const appid = params.appid || env.WX_APPID;
+    const secret = params.secret || env.WX_SECRET;
+    const useridStr = params.userid || env.WX_USERID;
+    const template_id = params.template_id || env.WX_TEMPLATE_ID;
+    const base_url = params.base_url || env.WX_BASE_URL;
+
+    try {
+      const accessToken = await getStableToken(appid, secret);
+      const user_list = useridStr.split('|').map(u => u.trim()).filter(Boolean);
+      const results = await Promise.all(user_list.map(userid => sendMessage(accessToken, userid, template_id, base_url, title, content)));
+      return new Response(JSON.stringify({ msg: 'Success', results }), { status: 200, headers: { 'Content-Type': 'application/json' } });
+    } catch (e) {
+      return new Response(JSON.stringify({ msg: e.message }), { status: 500, headers: { 'Content-Type': 'application/json' } });
+    }
+  }
+
+  // 2. 默认返回（由静态资源托管处理）
+  return context.next();
+};
