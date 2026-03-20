@@ -207,6 +207,19 @@
         gap: 24px;
         position: sticky;
         top: 24px;
+        max-height: calc(100vh - 48px);
+        overflow-y: auto;
+        padding-right: 4px;
+      }
+      .right-panel::-webkit-scrollbar {
+        width: 6px;
+      }
+      .right-panel::-webkit-scrollbar-track {
+        background: transparent;
+      }
+      .right-panel::-webkit-scrollbar-thumb {
+        background-color: var(--md-sys-color-outline-variant);
+        border-radius: 4px;
       }
 
       h1 {
@@ -480,6 +493,34 @@
 
       <!-- Right Panel: Skin Config & Preview -->
       <div class="right-panel">
+        
+        <!-- Usage Guide Card -->
+        <div class="md-card" style="flex: unset; padding: 24px;">
+          <h2 style="margin: 0 0 16px; font-size: 18px; color: var(--md-sys-color-primary);">快速使用教程</h2>
+          <ol style="margin: 0; padding-left: 20px; font-size: 14px; color: var(--md-sys-color-on-surface); line-height: 1.6;">
+            <li>前往 <a href="https://mp.weixin.qq.com/debug/cgi-bin/sandboxinfo?action=showinfo&t=sandbox/index" target="_blank" rel="noopener noreferrer" style="color: var(--md-sys-color-primary); text-decoration: none; font-weight: 700;">微信测试账号页面</a> 扫码登录。</li>
+            <li>获取并复制页面上的 <b>appID</b> 和 <b>appsecret</b> 填入左侧。</li>
+            <li>用手机扫描测试号二维码关注，获取右侧表格中的 <b>微信号 (userid)</b> 填入左侧。</li>
+            <li>在“新增测试模板”中，填写以下两行内容：
+              <pre style="background: var(--md-sys-color-surface); padding: 8px 12px; margin: 8px 0; border-radius: 6px; border: 1px solid var(--md-sys-color-outline-variant); font-size: 13px; color: var(--md-sys-color-on-surface-variant); user-select: all;">{{title.DATA}}
+{{content.DATA}}</pre>
+            </li>
+            <li>复制生成的 <b>模板 ID (template_id)</b> 填入左侧，即可进行推送！</li>
+          </ol>
+        </div>
+        
+        <!-- Config Management Card -->
+        <div class="md-card" style="flex: unset; padding: 24px;">
+          <h2 style="margin: 0 0 16px; font-size: 18px; color: var(--md-sys-color-primary);">配置管理</h2>
+          <p style="font-size: 13px; color: var(--md-sys-color-on-surface-variant); margin-top: 0; margin-bottom: 16px;">
+            一键将常用参数（密钥环境及皮肤偏好等）保存至浏览器本地，下次访问将自动填充。
+          </p>
+          <div style="display: flex; gap: 12px;">
+            <button class="btn-primary" type="button" id="saveConfigBtn" style="flex: 1; padding: 0;">保存配置</button>
+            <button class="btn-outlined" type="button" id="loadConfigBtn" style="flex: 1; padding: 0;">读取配置</button>
+          </div>
+        </div>
+
         <div class="md-card" style="flex: unset; padding: 24px;">
           <h2 style="margin: 0 0 16px; font-size: 18px; color: var(--md-sys-color-primary);">个性化皮肤</h2>
           <div class="md-input-container" style="margin-bottom: 0;">
@@ -601,6 +642,81 @@
 
       // Initial Call
       updateThemeAndIframe();
+
+      const STORAGE_KEY = 'wxpush_config';
+
+      function saveConfig() {
+        const config = {
+          token: tokenInput.value,
+          userid: document.getElementById('userid').value,
+          appid: document.getElementById('appid').value,
+          secret: document.getElementById('secret').value,
+          template_id: document.getElementById('template_id').value,
+          skin: skinSelect.value,
+          base_url: document.getElementById('base_url').value
+        };
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(config));
+        
+        const btn = document.getElementById('saveConfigBtn');
+        if (btn) {
+          const origText = '保存配置';
+          btn.textContent = '已保存 ✓';
+          btn.style.borderColor = 'var(--md-sys-color-primary)';
+          setTimeout(() => {
+            btn.textContent = origText;
+            btn.style.borderColor = '';
+          }, 2000);
+        }
+      }
+
+      function loadConfig(isManualClick = true) {
+        try {
+          const stored = localStorage.getItem(STORAGE_KEY);
+          const btn = document.getElementById('loadConfigBtn');
+          const origText = '读取配置';
+
+          if (stored) {
+            const config = JSON.parse(stored);
+            if (config.token !== undefined && !urlParams.has('token')) tokenInput.value = config.token;
+            if (config.userid !== undefined) document.getElementById('userid').value = config.userid;
+            if (config.appid !== undefined) document.getElementById('appid').value = config.appid;
+            if (config.secret !== undefined) document.getElementById('secret').value = config.secret;
+            if (config.template_id !== undefined) document.getElementById('template_id').value = config.template_id;
+            if (config.skin !== undefined) skinSelect.value = config.skin;
+            if (config.base_url !== undefined) document.getElementById('base_url').value = config.base_url;
+            
+            updateDynamicFields();
+            updateThemeAndIframe();
+            
+            if (isManualClick && btn) {
+              btn.textContent = '已读取 ✓';
+              btn.style.borderColor = 'var(--md-sys-color-primary)';
+              setTimeout(() => { btn.textContent = origText; btn.style.borderColor = ''; }, 2000);
+            }
+          } else {
+            if (isManualClick && btn) {
+              btn.textContent = '无记录 ✗';
+              btn.style.color = 'var(--md-sys-color-error)';
+              btn.style.borderColor = 'var(--md-sys-color-error)';
+              setTimeout(() => { 
+                btn.textContent = origText; 
+                btn.style.color = ''; 
+                btn.style.borderColor = ''; 
+              }, 2000);
+            }
+          }
+        } catch(e) {
+          console.error('Failed to load config', e);
+        }
+      }
+
+      document.getElementById('saveConfigBtn').addEventListener('click', saveConfig);
+      document.getElementById('loadConfigBtn').addEventListener('click', () => loadConfig(true));
+
+      // Auto load config on page initialization
+      window.addEventListener('DOMContentLoaded', () => {
+        loadConfig(false);
+      });
 
       clearBtn.addEventListener('click', () => {
         document.getElementById('token').value = '';

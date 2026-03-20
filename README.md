@@ -4,12 +4,13 @@
 
 ## ✨ 特性
 
-- 完全免费
+- 完全免费且开源
 - 支持多用户 (`userid` 用 `|` 分隔)
 - 支持 GET / POST / Webhook
 - 支持临时覆盖 AppID / Secret / 模板ID / 跳转链接
-- 支持内置皮肤跳转页（`classic` / `night` / `hacker`）
-- 可部署到 EdgeOne Pages（推荐）或 Cloudflare Workers
+- 内置高达 **11套高颜值皮肤联动**（最新重构 Material Design 3 设计规范）
+- ✨ **最新支持公共测试平台**：首页即可直接预览和测试发送（集成浏览器本地存储配置记忆）
+- 全面优化路由：部署至 EdgeOne Pages 后纯静态与云函数分离，极大降低函数调用额外开销
 
 ## 🚀 EdgeOne 标准部署
 
@@ -34,13 +35,10 @@
 }
 ```
 
-### 3. 一键部署按钮
+### 3. 一键部署至 EdgeOne Pages 
 
-将以下 Markdown 放到你的 README：
 
-```md
 [![使用 EdgeOne Pages 部署](https://cdnstatic.tencentcs.com/edgeone/pages/deploy.svg)](https://console.cloud.tencent.com/edgeone/pages/new?repository-url=https%3A%2F%2Fgithub.com%2Fshisheng820%2FWXPush-edgeone&project-name=wxpush-edgeone&output-directory=.&env=API_TOKEN%2CWX_APPID%2CWX_SECRET%2CWX_USERID%2CWX_TEMPLATE_ID%2CWX_BASE_URL%2CWX_SKIN&env-description=%E8%AF%B7%E5%A1%AB%E5%86%99%E5%BE%AE%E4%BF%A1%E6%8E%A8%E9%80%81%E7%9B%B8%E5%85%B3%E7%8E%AF%E5%A2%83%E5%8F%98%E9%87%8F)
-```
 
 支持常用参数：
 
@@ -96,7 +94,9 @@ https://<你的域名>/wxsend
 | `userid` | String | 否 | 临时覆盖默认接收用户 OpenID，多用户用 `|` 分隔。 |
 | `template_id` | String | 否 | 临时覆盖默认模板 ID。 |
 | `base_url` | String | 否 | 临时覆盖默认跳转 URL。 |
-| `skin` | String | 否 | 内置皮肤，支持 `classic`/`night`/`hacker`。未传 `base_url` 时用于生成跳转页。 |
+| `skin` | String | 否 | 内置卡片皮肤样式，共有 11 种可选。未传 `base_url` 时动态生成该皮肤环境作为跳转页。 |
+
+> **💡 温馨提示**：当你访问首页 `/` 时，平台提供了一个强大的 **Material Design 3 风格测试工具**。你可以**一键本地保存和自动恢复配置**到浏览器，还在右侧实时预览你选择的皮肤通知卡片样式！未填写 `token` 时系统会拦截并在本地要求你必须补充底下的四项密钥参数。
 
 ### GET 示例
 
