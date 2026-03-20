@@ -290,53 +290,33 @@ export async function onRequest(context) {
         color: #8c7e73;
         margin-bottom: 24px;
       }
-      /* Terminal UI Styles */
-      .terminal-window {
-        background: #1e1e1e;
-        border-radius: 8px;
-        box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+      .response-card {
+        background: #fff;
+        border-radius: 12px;
+        box-shadow: 0 4px 15px rgba(139, 92, 71, 0.08);
+        border: 1px solid #eee1d5;
         overflow: hidden;
-        border: 1px solid #333;
-        text-align: left;
       }
-      .terminal-header {
-        background: #323233;
-        padding: 10px 16px;
-        display: flex;
-        align-items: center;
-        border-bottom: 1px solid #111;
+      .response-header {
+        background: #fdf6f0;
+        padding: 12px 20px;
+        border-bottom: 1px solid #eee1d5;
+        font-weight: 700;
+        color: #8b5c47;
+        font-size: 15px;
       }
-      .terminal-buttons {
-        display: flex;
-        gap: 8px;
-      }
-      .t-btn {
-        width: 12px; height: 12px; border-radius: 50%;
-      }
-      .close-btn { background: #ff5f56; }
-      .min-btn { background: #ffbd2e; }
-      .max-btn { background: #27c93f; }
-      .terminal-title {
-        color: #999;
-        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, monospace;
-        font-size: 13px;
-        margin-left: 16px;
-      }
-      .terminal-body {
-        padding: 16px;
-        background: rgba(0, 0, 0, 0.9);
+      .response-body {
+        padding: 20px;
+        background: #fcfaf8;
       }
       #responseArea {
         margin: 0;
-        background: transparent;
-        color: #00ff00;
-        font-family: "Courier New", Courier, monospace;
+        color: #5d4d42;
+        font-family: inherit;
         font-size: 14px;
-        line-height: 1.5;
+        line-height: 1.6;
         white-space: pre-wrap;
         word-break: break-all;
-        padding: 0;
-        border-radius: 0;
       }
     </style>
   </head>
@@ -392,16 +372,9 @@ export async function onRequest(context) {
         </div>
       </form>
       <div id="responseCard" style="display:none; margin-top: 32px;">
-        <div class="terminal-window">
-          <div class="terminal-header">
-            <div class="terminal-buttons">
-              <span class="t-btn close-btn"></span>
-              <span class="t-btn min-btn"></span>
-              <span class="t-btn max-btn"></span>
-            </div>
-            <div class="terminal-title">bash - POST /wxsend</div>
-          </div>
-          <div class="terminal-body">
+        <div class="response-card">
+          <div class="response-header">请求响应</div>
+          <div class="response-body">
             <pre id="responseArea"></pre>
           </div>
         </div>
@@ -508,20 +481,15 @@ export async function onRequest(context) {
             const responseText = await response.text();
             
             const lines = [];
-            lines.push("$ curl -X POST /wxsend \\\\");
-            lines.push('  -H "Content-Type: application/json" \\\\');
-            if (token) lines.push('  -H "Authorization: ' + token + '" \\\\');
-            lines.push("  -d '{...}'");
+            lines.push("Status: HTTP " + response.status + " " + (response.statusText || ""));
             lines.push("");
-            lines.push("> HTTP/1.1 " + response.status + " " + (response.statusText || ""));
             
             try {
               const jsonObj = JSON.parse(responseText);
-              lines.push("> Content-Type: application/json");
-              lines.push("");
+              lines.push("Response Body:");
               lines.push(JSON.stringify(jsonObj, null, 2));
             } catch(e) {
-              lines.push("");
+              lines.push("Response Body:");
               lines.push(responseText);
             }
             
@@ -890,7 +858,7 @@ async function sendMessage(accessToken, userid, template_id, base_url, title, co
   const date = beijingTime.toISOString().slice(0, 19).replace('T', ' ');
 
   const jumpUrl = new URL(base_url);
-  jumpUrl.searchParams.set('message', content);
+  jumpUrl.searchParams.set('message', content.replace(/\n/g, '~n~'));
   jumpUrl.searchParams.set('date', date);
   jumpUrl.searchParams.set('title', title);
 
