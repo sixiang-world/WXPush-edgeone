@@ -577,8 +577,19 @@ export async function onRequest(context) {
         });
       }
 
+      // Create a Date object for Beijing time (UTC+8) by adding 8 hours to the current UTC time
+      const beijingTime = new Date(new Date().getTime() + 8 * 60 * 60 * 1000);
+      // Format the date to 'YYYY-MM-DD HH:MM:SS' string
+      const date = beijingTime.toISOString().slice(0, 19).replace('T', ' ');
+
+      const jumpUrl = new URL(finalBaseUrl);
+      jumpUrl.searchParams.set('message', content.replace(/\n/g, '~n~'));
+      jumpUrl.searchParams.set('date', date);
+      jumpUrl.searchParams.set('title', title);
+      const jumpUrlStr = jumpUrl.toString();
+
       const results = await Promise.all(user_list.map(userid =>
-        sendMessage(accessToken, userid, template_id, finalBaseUrl, title, content)
+        sendMessage(accessToken, userid, template_id, jumpUrlStr, title, content)
       ));
 
       const successfulMessages = results.filter(r => r.errmsg === 'ok');
@@ -587,7 +598,7 @@ export async function onRequest(context) {
         const responseBody = {
           msg: `Successfully sent messages to ${successfulMessages.length} user(s). First response: ok`,
           skin: skin.slug,
-          jump_url: finalBaseUrl,
+          jump_url: jumpUrlStr,
         };
         return new Response(JSON.stringify(responseBody), {
           status: 200,
@@ -849,23 +860,13 @@ async function getStableToken(appid, secret) {
   return data.access_token;
 }
 
-async function sendMessage(accessToken, userid, template_id, base_url, title, content) {
+async function sendMessage(accessToken, userid, template_id, target_url, title, content) {
   const sendUrl = `https://api.weixin.qq.com/cgi-bin/message/template/send?access_token=${accessToken}`;
-
-  // Create a Date object for Beijing time (UTC+8) by adding 8 hours to the current UTC time
-  const beijingTime = new Date(new Date().getTime() + 8 * 60 * 60 * 1000);
-  // Format the date to 'YYYY-MM-DD HH:MM:SS' string
-  const date = beijingTime.toISOString().slice(0, 19).replace('T', ' ');
-
-  const jumpUrl = new URL(base_url);
-  jumpUrl.searchParams.set('message', content.replace(/\n/g, '~n~'));
-  jumpUrl.searchParams.set('date', date);
-  jumpUrl.searchParams.set('title', title);
 
   const payload = {
     touser: userid,
     template_id: template_id,
-    url: jumpUrl.toString(),
+    url: target_url,
     data: {
       title: { value: title },
       content: { value: content },
